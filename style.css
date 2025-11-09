@@ -1,0 +1,227 @@
+/* -----------------------------
+   🌿 ΒΑΣΙΚΕΣ ΡΥΘΜΙΣΕΙΣ
+------------------------------ */
+@import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Montserrat:wght@400;600&display=swap');
+
+:root {
+  --shrek-green: #7BB661;
+  --swamp-green: #3E6B2B;
+  --gold-accent: #D4AF37;
+  --bg-light: #f4f9f4;
+  --text-dark: #1e1e1e;
+  --border-radius: 20px;
+  --transition-speed: 0.3s;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Montserrat', sans-serif;
+  background: linear-gradient(135deg, var(--bg-light), #dcefd8);
+  color: var(--text-dark);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: center;
+  padding: 20px;
+}
+
+/* -----------------------------
+   🌿 HEADER
+------------------------------ */
+header {
+  margin-bottom: 20px;
+}
+
+h1 {
+  font-family: 'Luckiest Guy', cursive;
+  font-size: 2.5rem;
+  color: var(--swamp-green);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.subtitle {
+  font-weight: 500;
+  color: #444;
+  margin-top: 5px;
+}
+
+/* -----------------------------
+   🌿 ΚΑΡΤΕΛΑ ΥΠΟΨΗΦΙΟΥ
+------------------------------ */
+#candidate-view {
+  width: 90%;
+  max-width: 600px;
+  background: white;
+  border-radius: var(--border-radius);
+  padding: 25px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  position: relative;
+}
+
+.candidate-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 25px;
+}
+
+.character, .player {
+  width: 100%;
+}
+
+.character img, .player img {
+  width: 100%;
+  max-width: 280px;
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  transition: transform var(--transition-speed);
+}
+
+.character img:hover, .player img:hover {
+  transform: scale(1.03);
+}
+
+.character h2, .player h3 {
+  margin-top: 10px;
+  font-weight: 600;
+  color: var(--swamp-green);
+}
+
+/* -----------------------------
+   🌿 ΚΟΥΜΠΙΑ
+------------------------------ */
+.btn {
+  margin-top: 25px;
+  background: var(--shrek-green);
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition-speed), transform 0.2s;
+}
+
+.btn:hover {
+  background: var(--swamp-green);
+  transform: translateY(-2px);
+}
+
+.hidden {
+  display: none;
+}
+
+/* -----------------------------
+   🌿 FOOTER
+------------------------------ */
+footer {
+  margin-top: 40px;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+/* -----------------------------
+   🌿 ΕΙΔΙΚΑ ΣΤΟΙΧΕΙΑ SHREK
+------------------------------ */
+
+/* Πράσινες "κεραίες" του Shrek πάνω από το header */
+header::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  left: calc(50% - 40px);
+  width: 20px;
+  height: 20px;
+  background: var(--shrek-green);
+  border-radius: 50%;
+  transform: rotate(-25deg);
+  box-shadow: 40px 0 var(--shrek-green);
+}
+
+/* Πλαίσιο γύρω από το candidate-view σαν ξύλινη πινακίδα */
+#candidate-view {
+  border: 8px solid var(--swamp-green);
+  background-image: linear-gradient(180deg, #fffef5, #f9f7e7);
+}
+
+/* -----------------------------
+   🧩 ΨΗΦΟΦΟΡΙΑ - ΘΕΣΕΙΣ & ΥΠΟΨΗΦΙΟΙ
+------------------------------ */
+
+#positions-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+  gap: 10px;
+  margin: 20px 0;
+  width: 100%;
+  max-width: 700px;
+}
+
+.vote-slot {
+  background: #fff;
+  border: 2px dashed var(--swamp-green);
+  border-radius: var(--border-radius);
+  padding: 10px;
+  min-height: 100px;
+  position: relative;
+  transition: background 0.2s;
+}
+
+.vote-slot span {
+  position: absolute;
+  top: 5px;
+  left: 8px;
+  font-weight: 700;
+  color: var(--swamp-green);
+}
+
+.vote-slot:hover {
+  background: #f3fff1;
+}
+
+#candidates-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 30px;
+}
+
+.candidate-thumb {
+  width: 90px;
+  text-align: center;
+  background: white;
+  border-radius: var(--border-radius);
+  padding: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  cursor: grab;
+  transition: transform 0.2s;
+}
+
+.candidate-thumb:hover {
+  transform: scale(1.05);
+}
+
+.candidate-thumb img {
+  width: 100%;
+  border-radius: var(--border-radius);
+}
+
+.candidate-thumb p {
+  font-weight: 600;
+  margin-top: 5px;
+  font-size: 0.9rem;
+}
+
+.candidate-thumb small {
+  color: #777;
+  font-size: 0.8rem;
+}
