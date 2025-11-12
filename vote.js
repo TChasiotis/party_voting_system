@@ -97,33 +97,58 @@ function checkSubmitBtn() {
 
 // Submit vote
 submitBtn.addEventListener("click", () => {
-  localStorage.setItem("last_vote", JSON.stringify(positions));
+  // === Δημιουργία καθαρής λίστας ψήφων με βάση τα ονόματα ===
+  const votes = positions.map(c => c ? (c.id || c.playerName || c.characterName) : null);
+  localStorage.setItem("last_vote", JSON.stringify(votes));
 
-  // === Υπολογισμός και αποθήκευση πόντων ===
+  // === Φόρτωση προηγούμενων πόντων ===
   let scores = JSON.parse(localStorage.getItem("shrek_scores")) || {};
-  const maxPoints = numPositions; // π.χ. 10 θέσεις -> 10 πόντοι στην 1η θέση
 
-  positions.forEach((c, i) => {
-    if (!c) return;
-    const id = c.id || c.characterName || c.playerName;
-    const pointsToAdd = maxPoints - i; // θέση 1 -> 10, θέση 2 -> 9 ...
-    scores[id] = (scores[id] || 0) + pointsToAdd; // ✅ προσθήκη στους παλιούς πόντους
+  // === Manual προσθήκη πόντων ανά θέση ===
+  votes.forEach((id, index) => {
+    if (!id) return;
+    let pointsToAdd = 0;
+
+    // Πόντοι ανά θέση (1η = 10, 2η = 9, ... 10η = 1)
+    if (index === 0) pointsToAdd = 10;
+    else if (index === 1) pointsToAdd = 9;
+    else if (index === 2) pointsToAdd = 8;
+    else if (index === 3) pointsToAdd = 7;
+    else if (index === 4) pointsToAdd = 6;
+    else if (index === 5) pointsToAdd = 5;
+    else if (index === 6) pointsToAdd = 4;
+    else if (index === 7) pointsToAdd = 3;
+    else if (index === 8) pointsToAdd = 2;
+    else if (index === 9) pointsToAdd = 1;
+
+    // Προσθήκη στο συνολικό σκορ
+    scores[id] = (scores[id] || 0) + pointsToAdd;
   });
 
+  // === Αποθήκευση πίσω στο localStorage ===
   localStorage.setItem("shrek_scores", JSON.stringify(scores));
-  // ==========================================
 
-  // Αύξηση γύρου ψηφοφόρου
+  // === Ενημέρωση των ίδιων των υποψηφίων στο STORAGE_KEY ===
+  let storedCandidates = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+  storedCandidates.forEach(c => {
+    const id = c.id || c.playerName || c.characterName;
+    c.points = scores[id] || 0;
+  });
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(storedCandidates));
+
+  // === Debugging ===
+  console.log("Votes:", votes);
+  console.log("Scores:", scores);
+
+  // === Αύξηση γύρου ===
   currentRound++;
   sessionStorage.setItem(SESSION_ROUND, currentRound);
 
   if (currentRound > numVoters) {
-    // Τελείωσαν όλοι οι ψηφοφόροι → results
     window.location.href = "results.html";
   } else {
-    // Επόμενος ψηφοφόρος
     positions = Array(numPositions).fill(null);
-    renderPositions();
+    if (typeof renderPositions === "function") renderPositions();
     window.location.href = "index.html";
   }
 });
@@ -131,22 +156,45 @@ submitBtn.addEventListener("click", () => {
 
 /*// Submit vote
 submitBtn.addEventListener("click", () => {
-  localStorage.setItem("last_vote", JSON.stringify(positions));
+  // === Δημιουργία καθαρής λίστας ψήφων με βάση τα ονόματα ===
+  const votes = positions.map(c => c ? (c.id || c.playerName || c.characterName) : null);
+  localStorage.setItem("last_vote", JSON.stringify(votes));
 
-  // Αυξηση γύρου ψηφοφόρου
+  // === Φόρτωση προηγούμενων πόντων ===
+  let scores = JSON.parse(localStorage.getItem("shrek_scores")) || {};
+  const maxPoints = numPositions; // π.χ. 10 θέσεις -> 10 πόντοι στην 1η θέση
+
+  // === Προσθήκη πόντων με βάση τη σειρά ===
+  votes.forEach((id, i) => {
+    if (!id) return;
+    const pointsToAdd = maxPoints - i; // 1η θέση -> 10 πόντοι
+    scores[id] = (scores[id] || 0) + pointsToAdd;
+  });
+
+  // === Αποθήκευση πίσω στο localStorage ===
+  localStorage.setItem("shrek_scores", JSON.stringify(scores));
+
+  // === Ενημέρωση των ίδιων των υποψηφίων στο STORAGE_KEY ===
+  let storedCandidates = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+  storedCandidates.forEach(c => {
+    const id = c.id || c.playerName || c.characterName;
+    c.points = scores[id] || 0;
+  });
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(storedCandidates));
+
+  // === Αύξηση γύρου ===
   currentRound++;
   sessionStorage.setItem(SESSION_ROUND, currentRound);
 
   if (currentRound > numVoters) {
-    // Τελείωσαν όλοι οι ψηφοφόροι → results
     window.location.href = "results.html";
   } else {
-    // Επόμενος ψηφοφόρος: καθάρισμα θέσεων & επιστροφή σε index
     positions = Array(numPositions).fill(null);
     renderPositions();
     window.location.href = "index.html";
   }
 });*/
+
 
 renderThumbs();
 renderPositions();
