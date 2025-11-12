@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shrek Awards - Αποτελέσματα</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  body { font-family: 'Poppins', sans-serif; background: #f0f0f0; text-align: center; margin: 0; padding: 20px; }
+  .container { max-width: 900px; margin: 0 auto; }
+  .btn { padding: 10px 20px; margin-top: 20px; cursor: pointer; border: none; border-radius: 8px;
+         background-color: #4caf50; color: white; font-size: 16px; transition: 0.3s; }
+  .btn:hover { background-color: #43a047; }
+  img { border-radius: 10px; }
+
+  .podium { display: flex; justify-content: center; align-items: flex-end; margin: 50px auto; gap: 40px; }
+  .podium-item { position: relative; width: 130px; display: flex; flex-direction: column; align-items: center; }
+  .podium-item img { width: 110px; height: 110px; object-fit: cover; border-radius: 10px; }
+  .podium-item h3 { margin-top: 8px; }
+  .podium-item p { margin: 3px 0; }
+  .medal { font-size: 2.2rem; position: absolute; top: -40px; }
+
+  .top10-list { display: flex; flex-direction: column; gap: 10px; align-items: center; margin-top: 30px; }
+  .top10-item { width: 80%; background: #fff; padding: 10px 15px; border-radius: 8px;
+                display: flex; justify-content: space-between; align-items: center;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+  .top10-item span { font-weight: bold; }
+</style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>🏆 Shrek Awards - Αποτελέσματα</h1>
+
+    <div id="resultsContainer"></div>
+    <button class="btn" id="nextBtn">Επόμενος</button>
+
+    <button class="btn" id="restart-btn" style="display:none;">🏠 Επιστροφή στην Αρχική</button>
+  </div>
+
+  <script src="results.js"></script>
+</body>
+</html>

@@ -37,6 +37,7 @@ body {
 ------------------------------ */
 header {
   margin-bottom: 20px;
+  position: relative; /* για να τοποθετούνται σωστά οι κεραίες */
 }
 
 h1 {
@@ -225,3 +226,125 @@ header::before {
   color: #777;
   font-size: 0.8rem;
 }
+
+/* -----------------------------
+   🧰 ADMIN PANEL
+------------------------------ */
+
+#login-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 90%;
+  max-width: 300px;
+  margin-top: 50px;
+}
+
+#login-section input {
+  padding: 10px;
+  border-radius: 12px;
+  border: 2px solid var(--swamp-green);
+}
+
+#management-section {
+  width: 95%;
+  max-width: 700px;
+}
+
+#candidates-list {
+  margin: 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.candidate-card-admin {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  border-radius: var(--border-radius);
+  padding: 12px 15px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.admin-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-card img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.admin-actions .btn {
+  font-size: 0.8rem;
+  padding: 6px 12px;
+}
+
+#candidate-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: #fff;
+  padding: 20px;
+  border-radius: var(--border-radius);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.admin-buttons {
+  margin-top: 25px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+/* Results page */
+.podium {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.place {
+  text-align: center;
+  position: relative;
+}
+
+.place img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 0.5rem;
+}
+
+.place.first { transform: translateY(-40px); }
+.place.second { transform: translateY(0px); }
+.place.third { transform: translateY(20px); }
+
+.others {
+  margin-top: 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.other-card {
+  background: #fff3;
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  width: 50%;
+  display: flex;
+  justify-content: space-between;
+}
+
+#submit-vote { display: none; margin-top: 1rem; }

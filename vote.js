@@ -1,96 +1,152 @@
-// ----- Προσωρινά δεδομένα για δοκιμή -----
-const candidates = [
-  { id: 1, name: "Θωμάς", character: "Shrek", photo: "images/thomas.jpg" },
-  { id: 2, name: "Μαρία", character: "Fiona", photo: "images/maria.jpg" },
-  { id: 3, name: "Νίκος", character: "Donkey", photo: "images/nikos.jpg" },
-  { id: 4, name: "Κώστας", character: "Puss in Boots", photo: "images/kostas.jpg" }
-];
+// vote.js — Drag & Drop voting page with multiple voters
 
-// ----- Δημιουργία πεδίων θέσεων -----
-const positionsContainer = document.getElementById("positions-container");
-for (let i = 1; i <= 10; i++) {
-  const slot = document.createElement("div");
-  slot.classList.add("vote-slot");
-  slot.dataset.position = i;
-  slot.innerHTML = `<span>${i}</span>`;
-  positionsContainer.appendChild(slot);
+const STORAGE_KEY = "shrek_candidates";
+let candidates = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+let numVoters = parseInt(localStorage.getItem("num_voters"), 10) || 1;
+
+// Session tracking
+const SESSION_ROUND = "shrek_round";
+let currentRound = parseInt(sessionStorage.getItem(SESSION_ROUND), 10);
+if (Number.isNaN(currentRound)) currentRound = 1;
+
+const numPositions = 10;
+const positionsContainer = document.getElementById("vote-positions");
+const thumbsContainer = document.getElementById("candidates-thumbs");
+const submitBtn = document.getElementById("submit-vote");
+
+let positions = Array(numPositions).fill(null);
+
+function renderPositions() {
+  positionsContainer.innerHTML = "";
+  for (let i = 0; i < numPositions; i++) {
+    const slot = document.createElement("div");
+    slot.className = "vote-slot";
+    slot.dataset.idx = i;
+    if (positions[i]) {
+      slot.textContent = positions[i].playerName;
+      slot.classList.add("occupied");
+    } else {
+      slot.textContent = `Θέση ${i + 1}`;
+      slot.classList.remove("occupied");
+    }
+    positionsContainer.appendChild(slot);
+  }
+  addSlotDragDrop();
+  checkSubmitBtn();
 }
 
-// ----- Δημιουργία μικρογραφιών υποψηφίων -----
-const candidatesContainer = document.getElementById("candidates-container");
-candidates.forEach(c => {
-  const card = document.createElement("div");
-  card.classList.add("candidate-thumb");
-  card.draggable = true;
-  card.dataset.id = c.id;
-  card.innerHTML = `
-    <img src="${c.photo}" alt="${c.name}">
-    <p>${c.name}</p>
-    <small>${c.character}</small>
-  `;
-  candidatesContainer.appendChild(card);
-});
+function renderThumbs() {
+  thumbsContainer.innerHTML = "";
+  candidates.forEach((c, index) => {
+    const thumb = document.createElement("div");
+    thumb.className = "candidate-thumb";
+    thumb.draggable = true;
+    thumb.dataset.idx = index;
 
-// ----- Drag & Drop -----
-let dragged = null;
+    const img = document.createElement("img");
+    img.src = c.playerPhoto || c.characterPhoto || "";
+    img.alt = c.playerName;
 
-document.addEventListener("dragstart", e => {
-  if (e.target.classList.contains("candidate-thumb")) {
-    dragged = e.target;
-    e.target.classList.add("dragging");
+    const name = document.createElement("div");
+    name.textContent = c.playerName;
+
+    thumb.appendChild(img);
+    thumb.appendChild(name);
+    thumbsContainer.appendChild(thumb);
+  });
+  addThumbDrag();
+}
+
+// Drag from thumbs
+function addThumbDrag() {
+  const thumbs = document.querySelectorAll(".candidate-thumb");
+  thumbs.forEach(thumb => {
+    thumb.addEventListener("dragstart", e => {
+      e.dataTransfer.setData("thumbIdx", thumb.dataset.idx);
+    });
+  });
+}
+
+// Drag & drop on slots
+function addSlotDragDrop() {
+  const slots = document.querySelectorAll(".vote-slot");
+  slots.forEach(slot => {
+    slot.addEventListener("dragover", e => e.preventDefault());
+    slot.addEventListener("drop", e => {
+      e.preventDefault();
+      const thumbIdx = parseInt(e.dataTransfer.getData("thumbIdx"));
+      const candidate = candidates[thumbIdx];
+      const slotIdx = parseInt(slot.dataset.idx);
+
+      // Remove candidate from previous slot
+      const prevSlotIdx = positions.findIndex(p => p === candidate);
+      if (prevSlotIdx !== -1) positions[prevSlotIdx] = null;
+
+      // If slot occupied, move old candidate back to thumbs (nothing extra needed)
+      positions[slotIdx] = candidate;
+
+      renderPositions();
+    });
+  });
+}
+
+function checkSubmitBtn() {
+  const allFilled = positions.every(p => p !== null);
+  submitBtn.style.display = allFilled ? "block" : "none";
+}
+
+// Submit vote
+submitBtn.addEventListener("click", () => {
+  localStorage.setItem("last_vote", JSON.stringify(positions));
+
+  // === Υπολογισμός και αποθήκευση πόντων ===
+  let scores = JSON.parse(localStorage.getItem("shrek_scores")) || {};
+  const maxPoints = numPositions; // π.χ. 10 θέσεις -> 10 πόντοι στην 1η θέση
+
+  positions.forEach((c, i) => {
+    if (!c) return;
+    const id = c.id || c.characterName || c.playerName;
+    const pointsToAdd = maxPoints - i; // θέση 1 -> 10, θέση 2 -> 9 ...
+    scores[id] = (scores[id] || 0) + pointsToAdd; // ✅ προσθήκη στους παλιούς πόντους
+  });
+
+  localStorage.setItem("shrek_scores", JSON.stringify(scores));
+  // ==========================================
+
+  // Αύξηση γύρου ψηφοφόρου
+  currentRound++;
+  sessionStorage.setItem(SESSION_ROUND, currentRound);
+
+  if (currentRound > numVoters) {
+    // Τελείωσαν όλοι οι ψηφοφόροι → results
+    window.location.href = "results.html";
+  } else {
+    // Επόμενος ψηφοφόρος
+    positions = Array(numPositions).fill(null);
+    renderPositions();
+    window.location.href = "index.html";
   }
 });
 
-document.addEventListener("dragend", e => {
-  if (dragged) dragged.classList.remove("dragging");
-  dragged = null;
-});
 
-document.querySelectorAll(".vote-slot").forEach(slot => {
-  slot.addEventListener("dragover", e => e.preventDefault());
-  slot.addEventListener("drop", e => {
-    e.preventDefault();
-    if (!dragged) return;
-    // Αν υπάρχει ήδη κάποιος στη θέση -> επιστρέφει πίσω
-    if (slot.querySelector(".candidate-thumb")) {
-      const existing = slot.querySelector(".candidate-thumb");
-      candidatesContainer.appendChild(existing);
-    }
-    slot.appendChild(dragged);
-    checkIfComplete();
-  });
-});
+/*// Submit vote
+submitBtn.addEventListener("click", () => {
+  localStorage.setItem("last_vote", JSON.stringify(positions));
 
-// ----- Έλεγχος αν έχουν συμπληρωθεί 10 θέσεις -----
-function checkIfComplete() {
-  const filled = document.querySelectorAll(".vote-slot .candidate-thumb").length;
-  document.getElementById("submit-vote").classList.toggle("hidden", filled < 10);
-}
+  // Αυξηση γύρου ψηφοφόρου
+  currentRound++;
+  sessionStorage.setItem(SESSION_ROUND, currentRound);
 
-// ----- Υποβολή Ψήφου -----
-document.getElementById("submit-vote").addEventListener("click", () => {
-  const results = [];
-  document.querySelectorAll(".vote-slot").forEach(slot => {
-    const player = slot.querySelector(".candidate-thumb");
-    if (player) {
-      results.push({
-        id: player.dataset.id,
-        position: parseInt(slot.dataset.position)
-      });
-    }
-  });
+  if (currentRound > numVoters) {
+    // Τελείωσαν όλοι οι ψηφοφόροι → results
+    window.location.href = "results.html";
+  } else {
+    // Επόμενος ψηφοφόρος: καθάρισμα θέσεων & επιστροφή σε index
+    positions = Array(numPositions).fill(null);
+    renderPositions();
+    window.location.href = "index.html";
+  }
+});*/
 
-  // Υπολογισμός πόντων
-  results.forEach(r => {
-    const candidate = candidates.find(c => c.id == r.id);
-    candidate.points = (11 - r.position);
-  });
-
-  console.log("Αποτελέσματα:", candidates);
-
-  // Μήνυμα μετά την υποβολή
-  document.getElementById("vote-section").innerHTML = `
-    <h2>💚 Ευχαριστούμε για τη συμμετοχή σου!</h2>
-    <button class="btn" onclick="window.location.reload()">Επόμενη Ψήφος</button>
-  `;
-});
+renderThumbs();
+renderPositions();
