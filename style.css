@@ -134,7 +134,7 @@ footer {
 ------------------------------ */
 
 /* Πράσινες "κεραίες" του Shrek πάνω από το header */
-header::before {
+/*header::before {
   content: "";
   position: absolute;
   top: 10px;
@@ -145,7 +145,7 @@ header::before {
   border-radius: 50%;
   transform: rotate(-25deg);
   box-shadow: 40px 0 var(--shrek-green);
-}
+}*/
 
 /* Πλαίσιο γύρω από το candidate-view σαν ξύλινη πινακίδα */
 #candidate-view {
